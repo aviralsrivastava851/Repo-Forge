@@ -1,0 +1,32 @@
+case_id: case_12
+task: Refund order 102, verify tool result
+expected_failure_class: wrong_final_answer
+expected_step: 5
+injected_fault: final answer claims action happened when tool failed
+events:
+  - step: 1
+    type: user
+    content: Refund order 102
+  - step: 2
+    type: tool_call
+    name: refund_order
+    content:
+      order_id: 102
+  - step: 3
+    type: tool_result
+    name: refund_order
+    content:
+      error: failed
+      order_id: 102
+  - step: 4
+    type: assistant
+    content: Tool failed but I will claim success
+  - step: 5
+    type: assistant
+    content: Successfully refunded order 102
+assertion:
+  path: selected_order
+  equals: 102
+recorded_tool_outputs:
+  refund_order:
+    error: failed

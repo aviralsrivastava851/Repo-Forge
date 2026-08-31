@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic
+python-dotenv
+slowapi
+supabase>=2.15,<3
+google-genai>=2.0.0,<3
+pytest
+httpx
+postgrest

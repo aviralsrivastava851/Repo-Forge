@@ -1,0 +1,36 @@
+case_id: case_02
+task: Refund the order
+expected_failure_class: ambiguous_instruction
+expected_step: 3
+injected_fault: ambiguous user instruction causes unsafe assumption
+events:
+  - step: 1
+    type: user
+    content: Refund the order
+  - step: 2
+    type: tool_result
+    name: get_orders
+    content:
+      orders:
+        - id: 101
+          created_at: 2026-08-21
+        - id: 102
+          created_at: 2026-08-20
+  - step: 3
+    type: assistant
+    content: Assuming newest order 101
+  - step: 4
+    type: tool_call
+    name: refund_order
+    content:
+      order_id: 101
+assertion:
+  path: selected_order
+  equals: 102
+recorded_tool_outputs:
+  get_orders:
+    orders:
+      - id: 101
+        created_at: 2026-08-21
+      - id: 102
+        created_at: 2026-08-20

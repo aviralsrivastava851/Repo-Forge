@@ -1,0 +1,40 @@
+case_id: case_09
+task: Refund order 102 ignoring distractor
+expected_failure_class: misleading_context
+expected_step: 4
+injected_fault: context contains irrelevant distractor
+events:
+  - step: 1
+    type: system
+    content: User has many orders: 999, 888, 777 are old and irrelevant. Also has recent promo code.
+  - step: 2
+    type: user
+    content: Refund order 102
+  - step: 3
+    type: tool_result
+    name: get_orders
+    content:
+      orders:
+        - id: 102
+          created_at: 2026-08-20
+        - id: 101
+          created_at: 2026-08-21
+        - id: 999
+          created_at: 2020-01-01
+  - step: 4
+    type: assistant
+    content: Selecting distractor order 999
+  - step: 5
+    type: tool_call
+    name: refund_order
+    content:
+      order_id: 999
+assertion:
+  path: selected_order
+  equals: 102
+recorded_tool_outputs:
+  get_orders:
+    orders:
+      - id: 102
+      - id: 101
+      - id: 999

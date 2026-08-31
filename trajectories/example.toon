@@ -1,0 +1,37 @@
+task: Refund order 102, not the newest order
+expected: selected_order should be 102
+events:
+  - step: 1
+    type: user
+    content: Refund order 102
+  - step: 2
+    type: tool_call
+    name: get_orders
+    content:
+      filter: all
+  - step: 3
+    type: tool_result
+    name: get_orders
+    content:
+      orders:
+        - id: 102
+          created_at: 2026-08-20
+        - id: 101
+          created_at: 2026-08-21
+  - step: 4
+    type: assistant
+    content: I will refund the newest order as it seems most relevant
+  - step: 5
+    type: tool_call
+    name: refund_order
+    content:
+      order_id: 101
+  - step: 6
+    type: tool_result
+    name: refund_order
+    content:
+      status: refunded
+      order_id: 101
+  - step: 7
+    type: assistant
+    content: Refunded order 101 successfully
