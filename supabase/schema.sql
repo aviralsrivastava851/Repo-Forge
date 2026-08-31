@@ -1,0 +1,13 @@
+-- Run once in Supabase SQL Editor before deployment. Evidence artifacts are TOON TEXT.
+create table if not exists investigations (id text primary key, name text not null, task text not null, expected text not null, status text not null, toon_payload text, repository text, commit_sha text, created_at timestamptz not null default now());
+create table if not exists trajectories (id text primary key, investigation_id text not null references investigations(id) on delete cascade, toon_payload text not null, events_toon text, run_id text, repository text, commit_sha text, human_verified boolean default false, created_at timestamptz not null default now());
+create table if not exists test_cases (id text primary key, investigation_id text not null references investigations(id) on delete cascade, source text not null, input_toon text, fixtures_toon text, assertion_toon text, created_at timestamptz not null default now());
+create table if not exists runs (id text primary key, case_id text not null references test_cases(id) on delete cascade, config_id text not null, passed boolean not null, latency_ms integer not null, tokens integer not null default 0, evidence_toon text, model_used text, created_at timestamptz not null default now());
+create table if not exists configs (id text primary key, type text not null, prompt text, model text not null, params_toon text, created_at timestamptz not null default now());
+create table if not exists reports (id text primary key, investigation_id text not null references investigations(id) on delete cascade, verdict text not null, toon_payload text not null, summary_toon text, baseline_passed integer not null, candidate_passed integer not null, total_cases integer not null, regression_count integer not null, created_at timestamptz not null default now());
+create table if not exists workflow_artifacts (id text primary key, investigation_id text not null references investigations(id) on delete cascade, stage text not null, toon_payload text not null, model_used text, created_at timestamptz not null default now(), unique(investigation_id, stage));
+create table if not exists repository_tasks (id text primary key, repository text not null, commit_sha text not null, status text not null, toon_payload text not null, model_used text not null, approved_at timestamptz, created_at timestamptz not null default now());
+create index if not exists trajectories_investigation_id_idx on trajectories(investigation_id);
+create index if not exists test_cases_investigation_id_idx on test_cases(investigation_id);
+create index if not exists reports_investigation_id_idx on reports(investigation_id);
+create index if not exists workflow_artifacts_investigation_id_idx on workflow_artifacts(investigation_id);
