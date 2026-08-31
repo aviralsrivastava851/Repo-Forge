@@ -23,19 +23,22 @@ It does not replace LangSmith / Maxim AI / Phoenix. It starts where they stop: f
 ## Architecture
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': {'primaryColor':'#3B82F6','lineColor':'#64748B'}}}%%
+%%{init: {'theme':'base', 'themeVariables': {'fontSize':'13px','primaryTextColor':'#0F172A','lineColor':'#64748B'}}}%%
 flowchart LR
-    subgraph FE ["🎨 Frontend — Next.js 15"]
-      G["🌐 Live GitHub UI: /github"]
-      D["📊 Dashboard /investigations/[id]"]
+    subgraph FE ["Frontend — Next.js 15"]
+      direction TB
+      G["Live GitHub UI<br/>/github"]
+      D["Dashboard<br/>/investigations/[id]"]
     end
-    subgraph BE ["⚙️ Backend — FastAPI + Python"]
-      GH["🔍 GitHub Service<br/>list_repos / get_pinned_sha / list_files / search_code / read_file"]
-      GM["🤖 Gemini Provider<br/>3.6 Flash → 2.5 Flash fallback<br/>TOON only"]
-      AG["🧪 Agents: Failure Analyst / Reproducer / Stress Lab / Comparator"]
-      TR["📡 Trace Recorder<br/>SSE /api/runs/{id}/events"]
+    subgraph BE ["Backend — FastAPI + Python"]
+      direction TB
+      GH["GitHub Service<br/><span style='font-size:11px;color:#475569'>list_repos · get_pinned_sha · list_files · search_code · read_file</span>"]
+      GM["Gemini Provider<br/><span style='font-size:11px;color:#475569'>3.6 Flash → 2.5 Flash · TOON only</span>"]
+      AG["Agents<br/><span style='font-size:11px;color:#475569'>Failure Analyst · Reproducer · Stress Lab · Comparator</span>"]
+      TR["Trace Recorder<br/><span style='font-size:11px;color:#475569'>SSE /api/runs/{id}/events</span>"]
     end
-    subgraph DB ["🗄️ Supabase Cloud"]
+    subgraph DB ["Supabase Cloud — PostgreSQL"]
+      direction LR
       INV[(investigations)]
       TRAJ[(trajectories)]
       CASES[(test_cases)]
@@ -43,21 +46,21 @@ flowchart LR
       REP[(reports)]
       CONF[(configs)]
     end
-    G -- "1. list_repos(username)" --> GH
-    G -- "2. generate task (Gemini grounded)" --> GM
-    G -- "3. POST /runs (live agent)" --> GH
-    GH -- "tools: list_files / search_code / read_file" --> TR
-    TR -- "TOON trace.toon" --> AG
-    AG -- "analysis / reproducer / stress / compare" --> DB
-    D -- "TOON artifacts" --> DB
-    BE -- "TOON: application/toon, 10/min LLM, 60/min general" --> FE
 
-    classDef frontend fill:#DBEAFE,stroke:#2563EB,stroke-width:2px,color:#1E40AF
-    classDef backend fill:#D1FAE5,stroke:#059669,stroke-width:2px,color:#065F46
-    classDef gemini fill:#FEF3C7,stroke:#F59E0B,stroke-width:2px,color:#92400E
-    classDef agents fill:#FED7AA,stroke:#EA580C,stroke-width:2px,color:#7C2D12
-    classDef trace fill:#FCE7F3,stroke:#EC4899,stroke-width:2px,color:#9D174D
-    classDef database fill:#EDE9FE,stroke:#8B5CF6,stroke-width:2px,color:#5B21B6
+    G -- "1 · list_repos" --> GH
+    G -- "2 · generate task" --> GM
+    G -- "3 · POST /runs" --> GH
+    GH -- "tools" --> TR
+    TR -- "TOON trace.toon" --> AG
+    AG -- "analysis → reproducer → stress → compare" --> DB
+    D -. "TOON artifacts" .-> DB
+
+    classDef frontend fill:#F8FAFC,stroke:#6366F1,stroke-width:1.5px,color:#1E1B4B
+    classDef backend fill:#FFFFFF,stroke:#0EA5E9,stroke-width:1.5px,color:#0C4A6E
+    classDef gemini fill:#FFFBEB,stroke:#F59E0B,stroke-width:1.5px,color:#78350F
+    classDef agents fill:#F0FDF4,stroke:#059669,stroke-width:1.5px,color:#052E16
+    classDef trace fill:#EFF6FF,stroke:#3B82F6,stroke-width:1.5px,color:#1E3A8A
+    classDef database fill:#F5F3FF,stroke:#8B5CF6,stroke-width:1.5px,color:#2E1065
 
     class G,D frontend
     class GH backend
@@ -66,14 +69,17 @@ flowchart LR
     class TR trace
     class INV,TRAJ,CASES,RUNS,REP,CONF database
 
-    linkStyle 0 stroke:#2563EB,stroke-width:2px
-    linkStyle 1 stroke:#F59E0B,stroke-width:2px
-    linkStyle 2 stroke:#2563EB,stroke-width:2px
-    linkStyle 3 stroke:#EC4899,stroke-width:2px
-    linkStyle 4 stroke:#EC4899,stroke-width:2px
-    linkStyle 5 stroke:#059669,stroke-width:2px
-    linkStyle 6 stroke:#8B5CF6,stroke-width:2px
-    linkStyle 7 stroke:#64748B,stroke-width:2px,stroke-dasharray: 5 5
+    style FE fill:#F8FAFC,stroke:#E2E8F0,stroke-width:1px,rounded:8px
+    style BE fill:#FEFEFE,stroke:#E2E8F0,stroke-width:1px,rounded:8px
+    style DB fill:#FAFAFA,stroke:#E2E8F0,stroke-width:1px,rounded:8px
+
+    linkStyle 0 stroke:#6366F1,stroke-width:1.8px
+    linkStyle 1 stroke:#F59E0B,stroke-width:1.8px
+    linkStyle 2 stroke:#6366F1,stroke-width:1.8px
+    linkStyle 3 stroke:#64748B,stroke-width:1.8px
+    linkStyle 4 stroke:#3B82F6,stroke-width:1.8px
+    linkStyle 5 stroke:#059669,stroke-width:1.8px
+    linkStyle 6 stroke:#8B5CF6,stroke-width:1.5px,stroke-dasharray:4 4
 ```
 
 **Stack:** Next.js 15 + Tailwind + shadcn/ui | FastAPI + Pydantic + SlowAPI + `google-genai>=2.0.0` | Supabase Cloud (PostgreSQL) | Gemini `3.6-flash` primary → `2.5-flash` fallback | TOON (~40% token savings)
