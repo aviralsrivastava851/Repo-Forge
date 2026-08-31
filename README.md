@@ -24,17 +24,17 @@ It does not replace LangSmith / Maxim AI / Phoenix. It starts where they stop: f
 
 ```mermaid
 flowchart LR
-    subgraph FE [Frontend — Next.js 15]
-      G[Live GitHub UI: /github]
-      D[Dashboard /investigations/[id]]
+    subgraph FE ["Frontend — Next.js 15"]
+      G["Live GitHub UI: /github"]
+      D["Dashboard /investigations/[id]"]
     end
-    subgraph BE [Backend — FastAPI + Python]
-      GH[GitHub Service: list_repos/get_pinned_sha/list_files/search_code/read_file]
-      GM[Gemini Provider: 3.6 Flash → 2.5 Flash fallback, TOON only]
-      AG[Agents: Failure Analyst / Reproducer / Stress Lab / Comparator]
-      TR[Trace Recorder: SSE /api/runs/{id}/events]
+    subgraph BE ["Backend — FastAPI + Python"]
+      GH["GitHub Service: list_repos/get_pinned_sha/list_files/search_code/read_file"]
+      GM["Gemini Provider: 3.6 Flash → 2.5 Flash fallback, TOON only"]
+      AG["Agents: Failure Analyst / Reproducer / Stress Lab / Comparator"]
+      TR["Trace Recorder: SSE /api/runs/{id}/events"]
     end
-    subgraph DB [Supabase Cloud]
+    subgraph DB ["Supabase Cloud"]
       INV[(investigations)]
       TRAJ[(trajectories)]
       CASES[(test_cases)]
